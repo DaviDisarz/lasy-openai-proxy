@@ -17,20 +17,29 @@ export default async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": Bearer ${process.env.OPENAI_API_KEY}
+        // sem $ aqui, só concatenação normal:
+        "Authorization": "Bearer " + process.env.OPENAI_API_KEY
       },
       body: JSON.stringify({
-        model: options?.model || "gpt-4o-mini",
+        model: (options && options.model) || "gpt-4o-mini",
         messages: [
           { role: "user", content: prompt }
         ],
-        max_tokens: options?.max_tokens || 500,
-        temperature: options?.temperature ?? 0.7
+        max_tokens: (options && options.max_tokens) || 500,
+        temperature: (options && options.temperature) != null
+          ? options.temperature
+          : 0.7
       })
     });
 
     const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || "Erro na resposta da OpenAI";
+    const text =
+      data.choices &&
+      data.choices[0] &&
+      data.choices[0].message &&
+      data.choices[0].message.content
+        ? data.choices[0].message.content
+        : "Erro na resposta da OpenAI";
 
     return res.status(200).json({ text, raw: data });
 
