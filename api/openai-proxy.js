@@ -1,8 +1,7 @@
-import fetch from 'node-fetch';
-
 export default async function handler(req, res) {
   try {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    if (req.method !== 'POST')
+      return res.status(405).json({ error: 'Method not allowed' });
 
     const { prompt, options } = req.body || {};
     if (!prompt) return res.status(400).json({ error: 'Missing prompt' });
@@ -11,14 +10,14 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': Bearer ${process.env.OPENAI_API_KEY}
+        'Authorization': Bearer ${process.env.OPENAI_API_KEY},
       },
       body: JSON.stringify({
         model: options?.model || 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
         max_tokens: options?.max_tokens || 500,
-        temperature: options?.temperature ?? 0.7
-      })
+        temperature: options?.temperature ?? 0.7,
+      }),
     });
 
     const data = await openaiRes.json();
@@ -30,3 +29,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Server error', details: err.message });
   }
 }
+
+
