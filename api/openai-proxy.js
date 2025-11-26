@@ -1,10 +1,11 @@
 export default async function handler(req, res) {
   try {
+    // Só aceita POST
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // Recebe o prompt enviado pela Lazy
+    // Recebe o prompt e opções da Lazy
     const { prompt, options } = req.body || {};
 
     if (!prompt) {
@@ -34,10 +35,10 @@ export default async function handler(req, res) {
     return res.status(200).json({ text, raw: data });
 
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       error: "Server error",
       details: error.message
     });
   }
 }
-
